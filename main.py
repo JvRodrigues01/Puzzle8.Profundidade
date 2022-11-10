@@ -51,7 +51,41 @@ def dfs(startState):
                     MaxSearchDeep = 1 + MaxSearchDeep
         if len(stack) > MaxFrontier:
             MaxFrontier = len(stack)
-        
+
+#AST**************************************************************
+def ast(startState):
+    
+    global MaxFrontier, MaxSearchDeep, GoalNode
+    
+    #transform initial state to calculate Heuritic
+    node1 = ""
+    for poss in startState:
+        node1 = node1 + str(poss)
+
+    #calculate Heuristic and set initial node
+    key = Heuristic(node1)
+    boardVisited= set()
+    Queue = []
+    Queue.append(PuzzleState(startState, None, None, 0, 0, key)) 
+    boardVisited.add(node1)
+    
+    while Queue:
+        Queue.sort(key=lambda o: o.key) 
+        node = Queue.pop(0)
+        if node.state == GoalState:
+            GoalNode = node
+            return Queue
+        posiblePaths = subNodes(node)
+        for path in posiblePaths:      
+            thisPath = path.map[:]
+            if thisPath not in boardVisited:
+                key = Heuristic(path.map)
+                path.key = key + path.depth
+                Queue.append(path)               
+                boardVisited.add(path.map[:])
+                if path.depth > MaxSearchDeep:
+                    MaxSearchDeep = 1 + MaxSearchDeep
+                    
 #Heuristic: distance to root numbers
 values_0 = [0,1,2,1,2,3,2,3,4]
 values_1 = [1,0,1,2,1,2,3,2,3]
@@ -260,6 +294,7 @@ def main():
     
     #Obtain information from calling parameters
     parser = argparse.ArgumentParser()
+    parser.add_argument('method')
     parser.add_argument('initialBoard')
     args = parser.parse_args()
     data = args.initialBoard.split(",")
@@ -279,7 +314,11 @@ def main():
     #Start operation
     start = timeit.default_timer()
 
-    dfs(InitialState)
+    function = args.method
+    if(function=="dfs"):
+        dfs(InitialState)  
+    if(function=="ast"):
+        ast(InitialState) 
 
     stop = timeit.default_timer()
     time = stop-start
