@@ -1,4 +1,4 @@
-﻿# Puzzle8.Profundidade
+﻿# Puzzle8.Search
 
 João Vitor Rodrigues Carrijo - 591009<br />
 Rafael Ferreira Pereira - 587761<br />
